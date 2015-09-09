@@ -1,0 +1,3 @@
+name: P-3058_Pipeline_Accelerator
+main: me.exerosis.packet.PacketAPI
+version: 11.3.0

@@ -1,26 +1,18 @@
 package me.exerosis.packet.player.injection.packet.player.injector;
 
+import com.google.common.collect.MapMaker;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.exerosis.packet.player.injection.events.in.PacketEventInPlayerDigging;
 
+import java.nio.channels.Channel;
 import java.util.Map;
 
 public class ReadWriteHandler extends ChannelDuplexHandler {
 
-    public static Map<Class<?>, EventCaller> events;
+
 
     static {
-
-        events.put(PacketEventInPlayerDigging.class, new EventCaller() {
-
-            @Override
-            public void call(Object packet) {
-                //Event stuff fireing thigns much lots!
-            }
-
-        });
 
     }
 

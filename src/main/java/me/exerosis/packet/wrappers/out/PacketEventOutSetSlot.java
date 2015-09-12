@@ -1,6 +1,6 @@
 package me.exerosis.packet.wrappers.out;
 
-import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
+import me.exerosis.packet.utils.packet.PacketPlay;
 import me.exerosis.packet.utils.packet.PacketUtil;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
@@ -8,8 +8,16 @@ import org.bukkit.inventory.ItemStack;
 
 public class PacketEventOutSetSlot extends PacketWrapper {
 
-    public PacketEventOutSetSlot(Object packet, PacketPlayer player) {
-        super(packet, player);
+    public PacketEventOutSetSlot(Object packet) {
+        super(packet);
+    }
+
+    public PacketEventOutSetSlot(int windowID, int slot, ItemStack item) {
+        super(PacketPlay.Out.SetSlot(windowID, slot, item));
+    }
+
+    public PacketEventOutSetSlot(int windowID, int slot, Object item) {
+        super(PacketPlay.Out.SetSlot(windowID, slot, item));
     }
 
     public int getWindowID() {
@@ -17,7 +25,7 @@ public class PacketEventOutSetSlot extends PacketWrapper {
     }
 
     public void setWindowID(int windowID) {
-        Reflect.Field(super.getPacket(), int.class, 0).setValue(windowID);
+        Reflect.Field(getPacket(), int.class, 0).setValue(windowID);
     }
 
     public int getSlot() {
@@ -25,7 +33,7 @@ public class PacketEventOutSetSlot extends PacketWrapper {
     }
 
     public void setSlot(int slot) {
-        Reflect.Field(super.getPacket(), int.class, 1).setValue(slot);
+        Reflect.Field(getPacket(), int.class, 1).setValue(slot);
     }
 
     public ItemStack getItem() {
@@ -33,6 +41,6 @@ public class PacketEventOutSetSlot extends PacketWrapper {
     }
 
     public void setItem(ItemStack item) {
-        Reflect.Field(super.getPacket(), Object.class, 0).setValue(item);
+        Reflect.Field(getPacket(), Object.class, 0).setValue(item);
     }
 }

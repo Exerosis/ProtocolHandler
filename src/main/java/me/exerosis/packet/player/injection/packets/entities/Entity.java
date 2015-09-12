@@ -2,10 +2,10 @@ package me.exerosis.packet.player.injection.packets.entities;
 
 import me.exerosis.io.util.StreamUtil;
 import me.exerosis.packet.PacketAPI;
-import me.exerosis.packet.player.injection.events.in.PacketEventInUseEntity;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.player.injection.packet.player.handlers.PlayerHandler;
 import me.exerosis.packet.utils.PlayerUtil;
+import me.exerosis.packet.wrappers.entity.in.PacketEventInUseEntity;
 import net.minecraft.server.v1_8_R1.Packet;
 import net.minecraft.server.v1_8_R1.PacketPlayOutEntityDestroy;
 import org.bukkit.Bukkit;

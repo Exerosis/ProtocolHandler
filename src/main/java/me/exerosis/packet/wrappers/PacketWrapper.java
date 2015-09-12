@@ -3,7 +3,7 @@ package me.exerosis.packet.wrappers;
 public abstract class PacketWrapper {
     private Object packet;
 
-    protected PacketWrapper(Object packet) {
+    public PacketWrapper(Object packet) {
         this.packet = packet;
     }
 

@@ -85,7 +85,6 @@ public class PacketPlayer {
     }
 
     // Getters for the players values.
-
     /**
      * Gets the Bukkit Player.
      *

@@ -5,7 +5,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
+import me.exerosis.reflection.Reflect;
 import net.minecraft.server.v1_8_R1.PacketLoginInStart;
+import net.minecraft.server.v1_8_R1.ServerConnection;
 import org.bukkit.entity.Player;
 
 final class Interceptor extends ChannelDuplexHandler {
@@ -16,7 +18,6 @@ final class Interceptor extends ChannelDuplexHandler {
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
         // Intercept channel
         final Channel channel = ctx.channel();
-
         handleLoginStart(channel, msg);
         super.channelRead(ctx, msg);
     }
@@ -28,8 +29,8 @@ final class Interceptor extends ChannelDuplexHandler {
 
     private void handleLoginStart(Channel channel, Object packet) {
         if (packet instanceof PacketLoginInStart) {
-            GameProfile profile = Reflect.Field(GameProfile.class, packet, 0).getValue();
-            =getGameProfile.get(packet);
+            GameProfile profile = Reflect.Field(packet, GameProfile.class).getValue();
+
             channelLookup.put(profile.getName(), channel);
         }
     }

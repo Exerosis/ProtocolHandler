@@ -1,6 +1,8 @@
 package me.exerosis.packet;
 
+import me.exerosis.packet.event.wrapper.EventWrapper;
 import me.exerosis.packet.player.injection.packet.player.handlers.PlayerHandler;
+import me.exerosis.packet.wrappers.in.PacketWrapperInChat;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,6 +23,7 @@ public class PacketAPI extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         plugin = this;
         PlayerHandler.getInstance();
+		new EventWrapper<>(PacketWrapperInChat.class, event -> System.out.println(event.getWrapper().getMessage()));
     }
 }
 

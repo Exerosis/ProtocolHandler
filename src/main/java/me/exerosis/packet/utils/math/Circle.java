@@ -132,6 +132,10 @@ public class Circle {
         protected boolean _layered;
         protected double _yMod;
 
+        public Builder(Location midpoint) {
+            this(midpoint.toVector());
+        }
+
         public Builder(Vector midpoint) {
             _midpoint = midpoint;
         }

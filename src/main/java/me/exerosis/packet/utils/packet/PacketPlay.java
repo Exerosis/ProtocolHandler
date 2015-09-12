@@ -106,8 +106,8 @@ public final class PacketPlay {
             ReflectClass<Object> packetClass = Reflect.Class("{nms}.PacketPlayOutEntityEffect");
             packetClass.newInstance();
             packetClass.getField(int.class, 0).setValue(id);
-            packetClass.getField(byte.class, 0).setValueCast(effectID & 255);
-            packetClass.getField(byte.class, 1).setValueCast(amplifier & 255);
+            packetClass.getField(byte.class, 0).setValueCast(effectID);
+            packetClass.getField(byte.class, 1).setValueCast(amplifier);
             packetClass.getField(int.class, 1).setValue(Math.min(duration, 32767));
             packetClass.getField(byte.class, 2).setValueCast(ambient ? 1 : 0);
             return packetClass.getInstance();
@@ -123,6 +123,63 @@ public final class PacketPlay {
 
         public static Object EntityEffect(int id, PotionEffectType type, int duration, int amplifier, boolean ambient) {
             return EntityEffect(id, type.getId(), duration, amplifier, ambient);
+        }
+
+        public static Object Transaction(int windowID, short actionNumber, boolean accepted) {
+            return Reflect.Class("{nms}.PacketPlayOutTransaction").newInstance(windowID, actionNumber, accepted);
+        }
+
+        public static Object ResourcePackSend(String URL, String hash) {
+            return Reflect.Class("{nms}.PacketPlayOutResourcePackSend").newInstance(URL, hash);
+        }
+
+        public static Object SetSlot(int windowID, int slot, ItemStack item) {
+            return SetSlot(windowID, slot, PacketUtil.NMSItemFromBukkit(item));
+        }
+
+        public static Object SetSlot(int windowID, int slot, Object item) {
+            return Reflect.Class("{nms}.PacketPlayOutSetSlot").newInstance(windowID, slot, item);
+        }
+
+        public static Object UpdateTime(int time, int age, boolean continueTick) {
+            return Reflect.Class("{nms}.PacketPlayOutUpdateTime").newInstance(time, age, continueTick);
+        }
+    }
+
+    public static class In {
+        private In() {
+        }
+
+        public static Object Chat(String message) {
+            return Reflect.Class("{nms}.PacketPlayInChat").newInstance(message);
+        }
+
+        public static Object HeldItemSlot(int slot) {
+            ReflectClass<Object> clazz = Reflect.Class("{nms}.PacketPlayInHeldItemSlot");
+            clazz.newInstance(slot);
+            clazz.getField(int.class).setValue(slot);
+            return clazz.getInstance();
+        }
+
+        public static Object UseEntity(int entityID, EntityUseAction action, Vector vector){
+            ReflectClass<Object> clazz = Reflect.Class("{nms}.PacketPlayInUseEntity");
+            clazz.newInstance();
+            clazz.getField(int.class, 0).setValue(entityID);
+            clazz.getField(Object.class, 1).setValue(PacketUtil.toVec3D(vector));
+            clazz.getField(Object.class, 0).setValue(action.toNMS());
+            return clazz.getInstance();
+        }
+
+        public static Object CloseWindow(int windowID) {
+            return Reflect.Class("{nms}.PacketPlayInCloseWindow").newInstance(windowID);
+        }
+
+        public static Object ResourcePackStatus(String hash, ResourcePackStatus status) {
+            ReflectClass<Object> clazz = Reflect.Class("{nms}.PacketPlayInResourcePackStatus");
+            clazz.newInstance();
+            clazz.getField(String.class, 0).setValue(hash);
+            clazz.getField(Object.class, 1).setValue(status.toNMS());
+            return clazz.getInstance();
         }
     }
 }

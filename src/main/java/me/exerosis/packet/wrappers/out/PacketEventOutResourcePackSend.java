@@ -1,34 +1,31 @@
 package me.exerosis.packet.wrappers.out;
 
-import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
+import me.exerosis.packet.utils.packet.PacketPlay;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 
 public class PacketEventOutResourcePackSend extends PacketWrapper {
-    private String URL;
-    private String hash;
+    public PacketEventOutResourcePackSend(Object packet) {
+        super(packet);
+    }
 
-    public PacketEventOutResourcePackSend(Object packet, PacketPlayer player) {
-        super(packet, player);
-        URL = Reflect.Field(packet, String.class, "a").getValue();
-        hash = Reflect.Field(packet, String.class, "b").getValue();
+    public PacketEventOutResourcePackSend(String URL, String hash) {
+        super(PacketPlay.Out.ResourcePackSend(URL, hash));
     }
 
     public String getURL() {
-        return URL;
+        return Reflect.Field(getPacket(), String.class, 0).getValue();
     }
 
     public void setURL(String URL) {
-        Reflect.Field(super.getPacket(), String.class, "a").setValue(URL);
-        this.URL = URL;
+        Reflect.Field(getPacket(), String.class, 0).setValue(URL);
     }
 
     public String getHash() {
-        return hash;
+        return Reflect.Field(getPacket(), String.class, 1).getValue();
     }
 
     public void setHash(String hash) {
-        Reflect.Field(super.getPacket(), String.class, "b").setValue(hash);
-        this.hash = hash;
+        Reflect.Field(getPacket(), String.class, 1).setValue(hash);
     }
 }

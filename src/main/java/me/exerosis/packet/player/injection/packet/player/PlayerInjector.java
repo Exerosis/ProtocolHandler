@@ -5,10 +5,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.exerosis.packet.PacketAPI;
-import me.exerosis.packet.event.PacketEvent;
-import me.exerosis.packet.event.PacketEventFireTask;
-import me.exerosis.packet.event.wrapper.PacketLookup;
+import me.exerosis.packet.event.ListenerPseudoInstance;
+import me.exerosis.packet.event.PacketEventSystem;
+import me.exerosis.packet.event.bukkit.PacketEvent;
+import me.exerosis.packet.event.bukkit.PacketReceiveEvent;
+import me.exerosis.packet.event.bukkit.PacketSentEvent;
 import net.minecraft.server.v1_8_R1.NetworkManager;
 import net.minecraft.server.v1_8_R1.Packet;
 import org.bukkit.Bukkit;
@@ -17,7 +18,6 @@ import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.NoSuchElementException;
-import java.util.concurrent.Future;
 
 @SuppressWarnings("unchecked")
 public class PlayerInjector extends ChannelDuplexHandler {
@@ -126,36 +126,33 @@ public class PlayerInjector extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object packet) throws Exception {
-        firePacketEvent(ctx, new PacketEvent(PacketLookup.getWrapper(packet), packetPlayer));
-        super.channelRead(ctx, packet);
+        fire(ctx, packet);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
-        firePacketEvent(ctx, new PacketEvent(PacketLookup.getWrapper(packet), packetPlayer), promise);
-        super.write(ctx, packet, promise);
+        fire(ctx, packet, promise);
     }
 
-    private void firePacketEvent(ChannelHandlerContext ctx, PacketEvent event) {
-        firePacketEvent(ctx, event, null);
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        cause.printStackTrace();
     }
 
-    private void firePacketEvent(ChannelHandlerContext ctx, PacketEvent event, ChannelPromise promise) {
-        Future<PacketEvent> futureTask = Bukkit.getScheduler().callSyncMethod(PacketAPI.getPlugin(), new PacketEventFireTask(event));
+    private void fire(ChannelHandlerContext ctx, Object event) throws Exception {
+        fire(ctx, event, null);
+    }
 
-        try {
-            event = futureTask.get();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void fire(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
+        ListenerPseudoInstance listener = PacketEventSystem.fire(packet, packetPlayer);
 
-        if (event.isCancelled())
-            return;
-        try {
-            if (promise == null) super.channelRead(ctx, event.getWrapper().getPacket());
-            else super.write(ctx, event.getWrapper().getPacket(), promise);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        PacketEvent event = promise == null ? new PacketReceiveEvent(packet, packetPlayer) : new PacketSentEvent(packet, packetPlayer);
+        Bukkit.getPluginManager().callEvent(event);
+
+        if (!event.isCancelled())
+            if (listener == null)
+                super.write(ctx, packet, promise);
+            else if (!listener.isCanceled())
+                super.write(ctx, listener.getWrapper().getPacket(), promise);
     }
 }

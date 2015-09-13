@@ -1,19 +1,18 @@
-package me.exerosis.packet.event;
+package me.exerosis.packet.event.bukkit;
 
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
-import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class PacketEvent <T extends PacketWrapper> extends Event implements Cancellable {
+public class PacketEvent extends Event implements Cancellable {
     private static final HandlerList HANDLER_LIST = new HandlerList();
-    private final T wrapper;
+    private final Object packet;
     private final PacketPlayer player;
     private boolean cancelled;
 
-    public PacketEvent(T wrapper, PacketPlayer player) {
-        this.wrapper = wrapper;
+    public PacketEvent( Object packet, PacketPlayer player) {
+        this.packet = packet;
         this.player = player;
     }
 
@@ -21,8 +20,8 @@ public class PacketEvent <T extends PacketWrapper> extends Event implements Canc
         return player;
     }
 
-    public T getWrapper() {
-        return wrapper;
+    public Object getPacket() {
+        return packet;
     }
 
     public static HandlerList getHandlerList() {

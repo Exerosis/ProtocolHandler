@@ -1,4 +1,4 @@
-package me.exerosis.packet.event;
+package me.exerosis.packet.event.bukkit;
 
 import org.bukkit.Bukkit;
 

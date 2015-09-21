@@ -5,7 +5,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPromise;
-import me.exerosis.packet.event.ListenerPseudoInstance;
 import me.exerosis.packet.event.PacketEventSystem;
 import me.exerosis.packet.event.bukkit.PacketEvent;
 import me.exerosis.packet.event.bukkit.PacketReceiveEvent;
@@ -126,7 +125,7 @@ public class PlayerInjector extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object packet) throws Exception {
-        fire(ctx, packet);
+        fire(ctx, packet, null);
     }
 
     @Override
@@ -139,20 +138,22 @@ public class PlayerInjector extends ChannelDuplexHandler {
         cause.printStackTrace();
     }
 
-    private void fire(ChannelHandlerContext ctx, Object event) throws Exception {
-        fire(ctx, event, null);
-    }
-
     private void fire(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
-        ListenerPseudoInstance listener = PacketEventSystem.fire(packet, packetPlayer);
+        me.exerosis.packet.event.PacketEvent listener = PacketEventSystem.fire(packet, packetPlayer);
 
         PacketEvent event = promise == null ? new PacketReceiveEvent(packet, packetPlayer) : new PacketSentEvent(packet, packetPlayer);
         Bukkit.getPluginManager().callEvent(event);
 
         if (!event.isCancelled())
             if (listener == null)
-                super.write(ctx, packet, promise);
+                if (promise != null)
+                    super.write(ctx, packet, promise);
+                else
+                    super.channelRead(ctx, packet);
             else if (!listener.isCanceled())
-                super.write(ctx, listener.getWrapper().getPacket(), promise);
+                if (promise != null)
+                    super.write(ctx, listener.getWrapper().getPacket(), promise);
+                else
+                    super.channelRead(ctx, listener.getWrapper().getPacket());
     }
 }

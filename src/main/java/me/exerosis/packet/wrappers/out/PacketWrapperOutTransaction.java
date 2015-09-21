@@ -4,13 +4,13 @@ import me.exerosis.packet.utils.packet.PacketPlay;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 
-public class PacketWrapperOutConfirmTransaction extends PacketWrapper {
+public class PacketWrapperOutTransaction extends PacketWrapper {
 
-    public PacketWrapperOutConfirmTransaction(Object packet) {
+    public PacketWrapperOutTransaction(Object packet) {
         super(packet);
     }
 
-    public PacketWrapperOutConfirmTransaction(int windowID, short actionNumber, boolean accepted) {
+    public PacketWrapperOutTransaction(int windowID, short actionNumber, boolean accepted) {
         super(PacketPlay.Out.Transaction(windowID, actionNumber, accepted));
     }
 

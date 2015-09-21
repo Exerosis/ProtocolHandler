@@ -41,9 +41,7 @@ public class PlayerHandler extends PlayerJoinQuitHandler {
      * @param packet
      */
     public static void sendGlobalPacket(PreconPacket packet) {
-        for (PacketPlayer player : getOnlinePlayers()) {
-            packet.send(player);
-        }
+        getOnlinePlayers().forEach(packet::send);
     }
 
     /**
@@ -74,9 +72,7 @@ public class PlayerHandler extends PlayerJoinQuitHandler {
      * @param packet
      */
     public static void receiveGlobalPacket(PreconPacket packet) {
-        for (PacketPlayer player : getOnlinePlayers()) {
-            packet.send(player);
-        }
+        getOnlinePlayers().forEach(packet::send);
     }
 
     //Singleton

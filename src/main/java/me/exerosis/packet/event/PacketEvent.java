@@ -2,11 +2,17 @@ package me.exerosis.packet.event;
 
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
+import me.exerosis.reflection.event.Cancellable;
 
-public class ListenerPseudoInstance<T extends PacketWrapper> {
+public class PacketEvent <T extends PacketWrapper> implements Cancellable {
     private T wrapper;
-    private boolean canceled;
     private PacketPlayer player;
+    private boolean canceled;
+
+    public PacketEvent(T wrapper, PacketPlayer player) {
+        this.wrapper = wrapper;
+        this.player = player;
+    }
 
     public PacketPlayer getPlayer() {
         return player;

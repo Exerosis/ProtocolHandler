@@ -4,14 +4,12 @@ import me.exerosis.packet.utils.location.AdvancedLocation;
 import me.exerosis.reflection.Reflect;
 import me.exerosis.reflection.ReflectClass;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-/**
- * Created by The Exerosis on 8/12/2015.
- */
 @SuppressWarnings("deprecation")
 public final class PacketPlay {
     private PacketPlay() {
@@ -144,10 +142,15 @@ public final class PacketPlay {
         public static Object UpdateTime(int time, int age, boolean continueTick) {
             return Reflect.Class("{nms}.PacketPlayOutUpdateTime").newInstance(time, age, continueTick);
         }
+
+        public static Object TabComplete(String[] results) {
+            return Reflect.Class("{nms}.PacketPlayOutTabComplete").newInstance(results);
+        }
     }
 
     public static class In {
         private In() {
+
         }
 
         public static Object Chat(String message) {
@@ -161,7 +164,7 @@ public final class PacketPlay {
             return clazz.getInstance();
         }
 
-        public static Object UseEntity(int entityID, EntityUseAction action, Vector vector){
+        public static Object UseEntity(int entityID, EntityUseAction action, Vector vector) {
             ReflectClass<Object> clazz = Reflect.Class("{nms}.PacketPlayInUseEntity");
             clazz.newInstance();
             clazz.getField(int.class, 0).setValue(entityID);
@@ -180,6 +183,26 @@ public final class PacketPlay {
             clazz.getField(String.class, 0).setValue(hash);
             clazz.getField(Object.class, 1).setValue(status.toNMS());
             return clazz.getInstance();
+        }
+
+        public static Object TabComplete(String text, int x, int y, int z) {
+            return TabComplete(text, new Vector(x, y, z));
+        }
+
+        public static Object TabComplete(String text, Block block) {
+            return TabComplete(text, block.getLocation().toVector());
+        }
+
+        public static Object TabComplete(String text, Location location) {
+            return TabComplete(text, location.toVector());
+        }
+
+        public static Object TabComplete(String text, Object blockPosition) {
+            return Reflect.Class("{nms}.PacketPlayOutTabComplete").newInstance(text, blockPosition);
+        }
+
+        public static Object TabComplete(String text, Vector vector) {
+            return Reflect.Class("{nms}.PacketPlayOutTabComplete").newInstance(text, PacketUtil.toBlockLocation(vector));
         }
     }
 }

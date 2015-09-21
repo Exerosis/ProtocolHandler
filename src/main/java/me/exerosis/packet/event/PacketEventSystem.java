@@ -5,7 +5,16 @@ import com.google.common.collect.ListMultimap;
 import me.exerosis.packet.PacketAPI;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
-import me.exerosis.packet.wrappers.in.PacketWrapperInChat;
+import me.exerosis.packet.wrappers.entity.out.PacketWrapperOutEntityEffect;
+import me.exerosis.packet.wrappers.entity.out.PacketWrapperOutEntityEquipment;
+import me.exerosis.packet.wrappers.entity.out.move.PacketWrapperOutEntityHeadRotation;
+import me.exerosis.packet.wrappers.entity.out.move.PacketWrapperOutEntityLook;
+import me.exerosis.packet.wrappers.entity.out.move.PacketWrapperOutRelEntityMove;
+import me.exerosis.packet.wrappers.entity.out.move.PacketWrapperOutRelEntityMoveLook;
+import me.exerosis.packet.wrappers.in.*;
+import me.exerosis.packet.wrappers.out.PacketWrapperOutResourcePackSend;
+import me.exerosis.packet.wrappers.out.PacketWrapperOutSetSlot;
+import me.exerosis.packet.wrappers.out.PacketWrapperOutTransaction;
 import me.exerosis.reflection.Reflect;
 import org.bukkit.Bukkit;
 
@@ -20,7 +29,30 @@ public final class PacketEventSystem {
     private static Map<Class<?>, Class<? extends PacketWrapper>> wrapperLookup = new HashMap<>();
 
     static {
+        //In
         addLookup("PacketPlayInChat", PacketWrapperInChat.class);
+        addLookup("PacketPlayInArmAnimation", PacketWrapperInArmAnimation.class);
+        addLookup("PacketPlayInBlockDig", PacketWrapperInBlockDig.class);
+        addLookup("PacketPlayInHeldItemSlot", PacketWrapperInHeldItemSlot.class);
+        addLookup("PacketPlayInResourcePackStatus", PacketWrapperInResourcePackStatus.class);
+        addLookup("PacketPlayInWindowClick", PacketWrapperInWindowClick.class);
+        addLookup("PacketPlayInCloseWindow", PacketWrapperInCloseWindow.class);
+
+        //Out
+            //Entity
+                //Move
+                addLookup("PacketPlayOutEntityHeadRotation", PacketWrapperOutEntityHeadRotation.class);
+                addLookup("PacketPlayOutEntityLook", PacketWrapperOutEntityLook.class);
+                addLookup("PacketPlayOutRelEntityMove", PacketWrapperOutRelEntityMove.class);
+                addLookup("PacketPlayOutRelEntityMoveLook", PacketWrapperOutRelEntityMoveLook.class);
+
+            addLookup("PacketPlayOutEntityEffect", PacketWrapperOutEntityEffect.class);
+            addLookup("PacketPlayOutEntityEquipment", PacketWrapperOutEntityEquipment.class);
+
+        addLookup("PacketPlayOutResourcePackSend", PacketWrapperOutResourcePackSend.class);
+        addLookup("PacketPlayOutSetSlot", PacketWrapperOutSetSlot.class);
+        addLookup("PacketPlayOutEntityEffect", PacketWrapperOutEntityEffect.class);
+        addLookup("PacketPlayOutTransaction", PacketWrapperOutTransaction.class);
     }
 
     private PacketEventSystem() {
@@ -35,20 +67,28 @@ public final class PacketEventSystem {
     }
 
     @SuppressWarnings("unchecked")
-    public static ListenerPseudoInstance fire(PacketWrapper wrapper, PacketPlayer player) {
-        Callable<ListenerPseudoInstance> listenerTask = () -> {
-            final ListenerPseudoInstance[] instance = {null};
+    public static PacketEvent fire(PacketWrapper wrapper, PacketPlayer player) {
+        Callable<PacketEvent> listenerTask = () -> {
+            final PacketEvent[] instance = {null};
             instances.get(wrapper.getClass()).forEach(l -> instance[0] = ListenerStorage.fire(l, wrapper, player));
             return instance[0];
         };
+
         try {
             if (wrapper.isSync()) {
-                Future<ListenerPseudoInstance> futureTask = Bukkit.getScheduler().callSyncMethod(PacketAPI.getPlugin(), listenerTask);
+                Bukkit.getScheduler().runTaskLater(PacketAPI.getPlugin(), new Runnable() {
+                    @Override
+                    public void run() {
+
+                    }
+                }, 0);
+                Future<PacketEvent> futureTask = Bukkit.getScheduler().callSyncMethod(PacketAPI.getPlugin(), listenerTask);
                 try {
                     return futureTask.get();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                System.out.println("lol");
             }
             else
                 return listenerTask.call();
@@ -58,7 +98,7 @@ public final class PacketEventSystem {
         return null;
     }
 
-    public static ListenerPseudoInstance fire(Object packet, PacketPlayer player) {
+    public static PacketEvent fire(Object packet, PacketPlayer player) {
         PacketWrapper wrapper = getWrapper(packet);
         return wrapper == null ? null : fire(wrapper, player);
     }

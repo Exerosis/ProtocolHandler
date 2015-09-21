@@ -3,55 +3,49 @@ package me.exerosis.packet.event;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class ListenerStorage {
-    private static Map<PacketListener, ListenerPseudoInstance> instances = new HashMap<>();
+    private static Map<PacketListener, PseudoInstance> instances = new WeakHashMap<>();
 
-    protected static void setCanceled(PacketListener instance, boolean canceled) {
-        getInstance(instance).setCanceled(canceled);
+    public static <T extends PacketWrapper> PacketEvent<T> getEvent(PacketListener<T> instance) {
+        return getInstance(instance).getEvent();
     }
 
-    protected static boolean isCanceled(PacketListener instance) {
-        return getInstance(instance).isCanceled();
+    public static <T extends PacketWrapper> void setEvent(PacketListener<T> instance, PacketEvent<T> event) {
+        getInstance(instance).setEvent(event);
     }
 
-    public static PacketPlayer getPlayer(PacketListener instance) {
-        return getInstance(instance).getPlayer();
-    }
+    protected static <T extends PacketWrapper> PacketEvent fire(PacketListener<T> instance, T wrapper, PacketPlayer player) {
+        PseudoInstance<T> pseudoInstance = getInstance(instance);
 
-    public static void setPlayer(PacketListener instance, PacketPlayer player) {
-        getInstance(instance).setPlayer(player);
-    }
-
-    public static <T extends PacketWrapper> T getWrapper(PacketListener<T> instance) {
-        return getInstance(instance).getWrapper();
-    }
-
-    public static <T extends PacketWrapper> void setWrapper(PacketListener<T> instance, T wrapper) {
-        getInstance(instance).setWrapper(wrapper);
-    }
-
-    protected static <T extends PacketWrapper> ListenerPseudoInstance fire(PacketListener<T> instance, T wrapper, PacketPlayer player) {
-        ListenerPseudoInstance<T> pseudoInstance = getInstance(instance);
-
-        pseudoInstance.setWrapper(wrapper);
-        pseudoInstance.setPlayer(player);
-        pseudoInstance.setCanceled(false);
-
+        PacketEvent<T> event = new PacketEvent<>(wrapper, player);
+        pseudoInstance.setEvent(event);
+        instance.onPacket(event);
         instance.onPacket();
-
-        return pseudoInstance;
+        return event;
     }
 
     @SuppressWarnings("unchecked")
-    private static <T extends  PacketWrapper> ListenerPseudoInstance<T> getInstance(PacketListener<T> instance) {
-        ListenerPseudoInstance<T> pseudoInstance = instances.get(instance);
+    private static <T extends  PacketWrapper> PseudoInstance<T> getInstance(PacketListener<T> instance) {
+        PseudoInstance<T> pseudoInstance = instances.get(instance);
         if (pseudoInstance != null)
             return pseudoInstance;
-        pseudoInstance = new ListenerPseudoInstance<>();
+        pseudoInstance = new PseudoInstance<>();
         instances.put(instance, pseudoInstance);
         return pseudoInstance;
+    }
+
+    public static class PseudoInstance<T extends PacketWrapper> {
+        private PacketEvent<T> event;
+
+        public void setEvent(PacketEvent<T> event) {
+            this.event = event;
+        }
+
+        public PacketEvent<T> getEvent() {
+            return event;
+        }
     }
 }

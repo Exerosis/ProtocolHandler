@@ -4,12 +4,12 @@ import me.exerosis.packet.utils.packet.PacketPlay;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 
-public class PacketEventOutResourcePackSend extends PacketWrapper {
-    public PacketEventOutResourcePackSend(Object packet) {
+public class PacketWrapperOutResourcePackSend extends PacketWrapper {
+    public PacketWrapperOutResourcePackSend(Object packet) {
         super(packet);
     }
 
-    public PacketEventOutResourcePackSend(String URL, String hash) {
+    public PacketWrapperOutResourcePackSend(String URL, String hash) {
         super(PacketPlay.Out.ResourcePackSend(URL, hash));
     }
 

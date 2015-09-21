@@ -6,17 +6,17 @@ import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 import org.bukkit.inventory.ItemStack;
 
-public class PacketEventOutSetSlot extends PacketWrapper {
+public class PacketWrapperOutSetSlot extends PacketWrapper {
 
-    public PacketEventOutSetSlot(Object packet) {
+    public PacketWrapperOutSetSlot(Object packet) {
         super(packet);
     }
 
-    public PacketEventOutSetSlot(int windowID, int slot, ItemStack item) {
+    public PacketWrapperOutSetSlot(int windowID, int slot, ItemStack item) {
         super(PacketPlay.Out.SetSlot(windowID, slot, item));
     }
 
-    public PacketEventOutSetSlot(int windowID, int slot, Object item) {
+    public PacketWrapperOutSetSlot(int windowID, int slot, Object item) {
         super(PacketPlay.Out.SetSlot(windowID, slot, item));
     }
 

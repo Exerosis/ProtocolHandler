@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ExTask {
-    public static Map<Runnable, Integer> _ids = new HashMap<>();
+    private static Map<Runnable, Integer> _ids = new HashMap<>();
 
     private ExTask() {
+    }
+
+    public static Map<Runnable, Integer> getIDs() {
+        return _ids;
     }
 
     public static void startTask(Runnable runnable, long delay, long time) {

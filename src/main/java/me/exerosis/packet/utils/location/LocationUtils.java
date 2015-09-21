@@ -83,6 +83,10 @@ public class LocationUtils {
         return new Location(world, x, y, z);
     }
 
+    public static String vectorToString(Vector vector){
+        return vector.getX() + ", " + vector.getY() + ", " + vector.getZ();
+    }
+
     public static Vector vectorFromString(String dataString) {
         dataString = dataString.replace(" ", "");
         String[] data = dataString.split(",");

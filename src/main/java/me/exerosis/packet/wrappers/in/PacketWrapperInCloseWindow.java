@@ -4,13 +4,13 @@ import me.exerosis.packet.utils.packet.PacketPlay;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 
-public final class PacketWrapperInWindowClose extends PacketWrapper {
+public final class PacketWrapperInCloseWindow extends PacketWrapper {
 
-    public PacketWrapperInWindowClose(Object packet) {
+    public PacketWrapperInCloseWindow(Object packet) {
         super(packet);
     }
 
-    public PacketWrapperInWindowClose(int windowID) {
+    public PacketWrapperInCloseWindow(int windowID) {
         super(PacketPlay.In.CloseWindow(windowID));
     }
 

@@ -1,8 +1,8 @@
 package me.exerosis.packet.event;
 
+import me.exerosis.component.event.Cancellable;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
-import me.exerosis.reflection.event.Cancellable;
 
 public class PacketEvent <T extends PacketWrapper> implements Cancellable {
     private T wrapper;
@@ -30,11 +30,11 @@ public class PacketEvent <T extends PacketWrapper> implements Cancellable {
         this.wrapper = wrapper;
     }
 
-    public void setCanceled(boolean canceled) {
-        this.canceled = canceled;
-    }
-
     public boolean isCanceled() {
         return canceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        this.canceled = canceled;
     }
 }

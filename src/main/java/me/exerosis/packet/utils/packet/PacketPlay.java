@@ -146,6 +146,10 @@ public final class PacketPlay {
         public static Object TabComplete(String[] results) {
             return Reflect.Class("{nms}.PacketPlayOutTabComplete").newInstance(results);
         }
+
+        public static Object EntityDestroy(int... IDs) {
+            return Reflect.Class("{nms}.PacketPlayOutEntityDestroy").newInstance(IDs);
+        }
     }
 
     public static class In {

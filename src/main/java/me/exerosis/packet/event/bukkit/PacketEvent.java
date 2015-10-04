@@ -1,7 +1,7 @@
 package me.exerosis.packet.event.bukkit;
 
+import me.exerosis.component.event.Cancellable;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
-import me.exerosis.reflection.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -16,16 +16,16 @@ public class PacketEvent extends Event implements Cancellable {
         this.player = player;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
+    }
+
     public PacketPlayer getPlayer() {
         return player;
     }
 
     public Object getPacket() {
         return packet;
-    }
-
-    public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
     }
 
     public HandlerList getHandlers() {

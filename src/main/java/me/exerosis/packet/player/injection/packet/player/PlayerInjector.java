@@ -39,7 +39,7 @@ public class PlayerInjector extends ChannelDuplexHandler {
         player = packetPlayer.getPlayer();
     }
 
-    //Private methods for handling in initialization and event firing.
+    //Private methods for handling in initialization and events firing.
     private static void initializeFields() {
         if (CHANNEL_FIELD != null)
             return;
@@ -135,7 +135,7 @@ public class PlayerInjector extends ChannelDuplexHandler {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        cause.printStackTrace();
+        unInject();
     }
 
     private void fire(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {

@@ -125,12 +125,14 @@ public class PlayerInjector extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object packet) throws Exception {
-        fire(ctx, packet, null);
+        //    fire(ctx, packet, null);
+        super.channelRead(ctx, packet);
     }
 
     @Override
     public void write(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
-        fire(ctx, packet, promise);
+        //   fire(ctx, packet, promise);
+        super.write(ctx, packet, promise);
     }
 
     @Override

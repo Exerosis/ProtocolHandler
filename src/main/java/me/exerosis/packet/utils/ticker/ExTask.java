@@ -15,6 +15,10 @@ public class ExTask {
         return _ids;
     }
 
+    public static void runTaskLater(Runnable runnable, long delay) {
+        Bukkit.getScheduler().runTaskLater(Bukkit.getPluginManager().getPlugins()[0], runnable, delay);
+    }
+
     public static void startTask(Runnable runnable, long delay, long time) {
         if (!isRunning(runnable))
             _ids.put(runnable, Bukkit.getScheduler().runTaskTimer(Bukkit.getPluginManager().getPlugins()[0], runnable, delay, time).getTaskId());

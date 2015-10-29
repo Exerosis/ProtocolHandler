@@ -1,6 +1,6 @@
 package me.exerosis.packet.event;
 
-import me.exerosis.component.event.Cancellable;
+import me.exerosis.event.Cancellable;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
 

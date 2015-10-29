@@ -15,5 +15,6 @@
     <orderEntry type="module" module-name="ReflectionUtilities" />
     <orderEntry type="module" module-name="ComponentFramework" />
     <orderEntry type="module" module-name="InputOutputUtilities" />
+    <orderEntry type="module" module-name="EventFramework" />
   </component>
 </module>

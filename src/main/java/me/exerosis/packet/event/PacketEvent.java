@@ -7,7 +7,6 @@ import me.exerosis.packet.wrappers.PacketWrapper;
 public class PacketEvent <T extends PacketWrapper> implements Cancellable {
     private T wrapper;
     private PacketPlayer player;
-    private boolean canceled;
 
     public PacketEvent(T wrapper, PacketPlayer player) {
         this.wrapper = wrapper;
@@ -28,13 +27,5 @@ public class PacketEvent <T extends PacketWrapper> implements Cancellable {
 
     public void setWrapper(T wrapper) {
         this.wrapper = wrapper;
-    }
-
-    public boolean isCanceled() {
-        return canceled;
-    }
-
-    public void setCanceled(boolean canceled) {
-        this.canceled = canceled;
     }
 }

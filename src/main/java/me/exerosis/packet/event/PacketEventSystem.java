@@ -2,7 +2,7 @@ package me.exerosis.packet.event;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import me.exerosis.packet.PacketAPI;
+import me.exerosis.event.EventManager;
 import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.packet.wrappers.entity.out.PacketWrapperOutEntityEffect;
@@ -16,16 +16,14 @@ import me.exerosis.packet.wrappers.out.PacketWrapperOutResourcePackSend;
 import me.exerosis.packet.wrappers.out.PacketWrapperOutSetSlot;
 import me.exerosis.packet.wrappers.out.PacketWrapperOutTransaction;
 import me.exerosis.reflection.Reflect;
-import org.bukkit.Bukkit;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 public final class PacketEventSystem {
     private static ListMultimap<Class<? extends PacketWrapper>, PacketListener> instances = ArrayListMultimap.create();
-
     private static Map<Class<?>, Class<? extends PacketWrapper>> wrapperLookup = new HashMap<>();
 
     static {
@@ -39,15 +37,15 @@ public final class PacketEventSystem {
         addLookup("PacketPlayInCloseWindow", PacketWrapperInCloseWindow.class);
 
         //Out
-            //Entity
-                //Move
-                addLookup("PacketPlayOutEntityHeadRotation", PacketWrapperOutEntityHeadRotation.class);
-                addLookup("PacketPlayOutEntityLook", PacketWrapperOutEntityLook.class);
-                addLookup("PacketPlayOutRelEntityMove", PacketWrapperOutRelEntityMove.class);
-                addLookup("PacketPlayOutRelEntityMoveLook", PacketWrapperOutRelEntityMoveLook.class);
+        //Entity
+        //Move
+        addLookup("PacketPlayOutEntityHeadRotation", PacketWrapperOutEntityHeadRotation.class);
+        addLookup("PacketPlayOutEntityLook", PacketWrapperOutEntityLook.class);
+        addLookup("PacketPlayOutRelEntityMove", PacketWrapperOutRelEntityMove.class);
+        addLookup("PacketPlayOutRelEntityMoveLook", PacketWrapperOutRelEntityMoveLook.class);
 
-            addLookup("PacketPlayOutEntityEffect", PacketWrapperOutEntityEffect.class);
-            addLookup("PacketPlayOutEntityEquipment", PacketWrapperOutEntityEquipment.class);
+        addLookup("PacketPlayOutEntityEffect", PacketWrapperOutEntityEffect.class);
+        addLookup("PacketPlayOutEntityEquipment", PacketWrapperOutEntityEquipment.class);
 
         addLookup("PacketPlayOutResourcePackSend", PacketWrapperOutResourcePackSend.class);
         addLookup("PacketPlayOutSetSlot", PacketWrapperOutSetSlot.class);
@@ -66,32 +64,16 @@ public final class PacketEventSystem {
         instances.entries().stream().filter(e -> e.getValue().equals(packetListener)).forEach(e -> instances.remove(e.getKey(), e.getValue()));
     }
 
-    @SuppressWarnings("unchecked")
-    public static PacketEvent fire(PacketWrapper wrapper, PacketPlayer player) {
-        Callable<PacketEvent> listenerTask = () -> {
-            final PacketEvent[] instance = {null};
-            instances.get(wrapper.getClass()).forEach(l -> instance[0] = ListenerStorage.fire(l, wrapper, player));
-            return instance[0];
-        };
 
+    public static <T extends PacketWrapper> PacketEvent<T> fire(T wrapper, PacketPlayer player) {
+        Callable<PacketEvent<T>> task = () -> EventManager.fire(new PacketEvent<>(wrapper, player));
+        FutureTask<PacketEvent<T>> futureTask = new FutureTask<>(task);
+        futureTask.run();
         try {
-            if (wrapper.isSync()) {
-                Bukkit.getScheduler().runTaskLater(PacketAPI.getPlugin(), new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                }, 0);
-                Future<PacketEvent> futureTask = Bukkit.getScheduler().callSyncMethod(PacketAPI.getPlugin(), listenerTask);
-                try {
-                    return futureTask.get();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                System.out.println("lol");
-            }
+            if (wrapper.isSync())
+                return futureTask.get();
             else
-                return listenerTask.call();
+                return task.call();
         } catch (Exception e) {
             e.printStackTrace();
         }

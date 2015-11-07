@@ -1,9 +1,7 @@
 package me.exerosis.packet.event;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import me.exerosis.event.EventManager;
-import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
+import me.exerosis.event.GlobalEventManager;
+import me.exerosis.packet.injection.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.packet.wrappers.entity.out.PacketWrapperOutEntityEffect;
 import me.exerosis.packet.wrappers.entity.out.PacketWrapperOutEntityEquipment;
@@ -23,7 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 
 public final class PacketEventSystem {
-    private static ListMultimap<Class<? extends PacketWrapper>, PacketListener> instances = ArrayListMultimap.create();
     private static Map<Class<?>, Class<? extends PacketWrapper>> wrapperLookup = new HashMap<>();
 
     static {
@@ -56,17 +53,8 @@ public final class PacketEventSystem {
     private PacketEventSystem() {
     }
 
-    public static <T extends PacketWrapper> void registerListener(Class<T> wrapperClass, PacketListener<T> packetListener) {
-        instances.put(wrapperClass, packetListener);
-    }
-
-    public static void unregisterListener(PacketListener packetListener) {
-        instances.entries().stream().filter(e -> e.getValue().equals(packetListener)).forEach(e -> instances.remove(e.getKey(), e.getValue()));
-    }
-
-
     public static <T extends PacketWrapper> PacketEvent<T> fire(T wrapper, PacketPlayer player) {
-        Callable<PacketEvent<T>> task = () -> EventManager.fire(new PacketEvent<>(wrapper, player));
+        Callable<PacketEvent<T>> task = () -> GlobalEventManager.fire(new PacketEvent<>(wrapper, player));
         FutureTask<PacketEvent<T>> futureTask = new FutureTask<>(task);
         futureTask.run();
         try {

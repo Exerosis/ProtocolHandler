@@ -1,7 +1,7 @@
 package me.exerosis.packet.event.bukkit;
 
 import me.exerosis.event.Cancellable;
-import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
+import me.exerosis.packet.injection.PacketPlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 

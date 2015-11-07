@@ -1,7 +1,7 @@
 package me.exerosis.packet.event;
 
 import me.exerosis.event.Cancellable;
-import me.exerosis.packet.player.injection.packet.player.PacketPlayer;
+import me.exerosis.packet.injection.PacketPlayer;
 import me.exerosis.packet.wrappers.PacketWrapper;
 
 public class PacketEvent <T extends PacketWrapper> implements Cancellable {

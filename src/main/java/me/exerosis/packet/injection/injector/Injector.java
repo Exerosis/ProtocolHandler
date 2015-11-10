@@ -8,22 +8,19 @@ import org.bukkit.Bukkit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("SynchronizeOnNonFinalField")
 public class Injector {
-    private static final AtomicInteger ID = new AtomicInteger(0);
-    private final String handlerName;
     protected volatile boolean closed;
     private List<Object> networkManagers = new ArrayList<>();
     private List<Channel> serverChannels = new ArrayList<>();
-    private List<PlayerInterceptor> interceptors = new ArrayList<>();
+
     private ChannelInboundHandlerAdapter serverChannelHandler;
     private ChannelInitializer<Channel> beginInitProtocol;
     private ChannelInitializer<Channel> endInitProtocol;
+    private InterceptorManager interceptorManager = new InterceptorManager();
 
     public Injector() {
-        handlerName = "P-3085_Pipeline_Accelerator-" + ID.incrementAndGet();
         registerChannelHandler();
     }
 
@@ -35,7 +32,7 @@ public class Injector {
                 try {
                     synchronized (networkManagers) {
                         if (!closed)
-                            injectChannelInternal(channel);
+                            interceptorManager.inject(channel);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -80,44 +77,20 @@ public class Injector {
         }
     }
 
-    private void unregisterChannelHandler() {
-        if (serverChannelHandler == null)
-            return;
-
-        for (Channel serverChannel : serverChannels) {
-            serverChannel.eventLoop().execute(() -> {
-                try {
-                    serverChannel.pipeline().remove(serverChannelHandler);
-                } catch (NoSuchElementException ignored) {
-                }
-            });
-        }
-    }
-
     public final void close() {
-        if (!closed) {
-            closed = true;
+        if (closed)
+            return;
+        closed = true;
+        interceptorManager.uninjectAll();
 
-            // Remove our handlers
-            interceptors.forEach(PlayerInterceptor::uninject);
-
-
-            // Clean up Bukkit
-            unregisterChannelHandler();
-        }
-    }
-
-
-    /**
-     * Add a custom channel handler to the given channel.
-     *
-     * @param player - the channel to inject.
-     * @return The packet interceptor.
-     */
-    private Interceptor injectChannelInternal(Channel channel) {
-        PlayerInterceptor interceptor = new PlayerInterceptor(channel, handlerName);
-        interceptor.inject();
-        interceptors.add(interceptor);
-        return interceptor;
+        if (serverChannelHandler != null)
+            for (Channel serverChannel : serverChannels) {
+                serverChannel.eventLoop().execute(() -> {
+                    try {
+                        serverChannel.pipeline().remove(serverChannelHandler);
+                    } catch (NoSuchElementException ignored) {
+                    }
+                });
+            }
     }
 }

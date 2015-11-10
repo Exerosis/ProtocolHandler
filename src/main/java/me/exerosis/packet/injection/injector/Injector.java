@@ -13,16 +13,17 @@ import java.util.concurrent.atomic.AtomicInteger;
 @SuppressWarnings("SynchronizeOnNonFinalField")
 public class Injector {
     private static final AtomicInteger ID = new AtomicInteger(0);
+    private final String handlerName;
     protected volatile boolean closed;
     private List<Object> networkManagers = new ArrayList<>();
     private List<Channel> serverChannels = new ArrayList<>();
-    private List<Interceptor> interceptors = new ArrayList<>();
+    private List<PlayerInterceptor> interceptors = new ArrayList<>();
     private ChannelInboundHandlerAdapter serverChannelHandler;
     private ChannelInitializer<Channel> beginInitProtocol;
     private ChannelInitializer<Channel> endInitProtocol;
-    private String handlerName = "P-3085_Pipeline_Accelerator-" + ID.incrementAndGet();
 
     public Injector() {
+        handlerName = "P-3085_Pipeline_Accelerator-" + ID.incrementAndGet();
         registerChannelHandler();
     }
 
@@ -98,16 +99,13 @@ public class Injector {
             closed = true;
 
             // Remove our handlers
-            for (Interceptor interceptor : interceptors) {
-                interceptors.getC
-            }
+            interceptors.forEach(PlayerInterceptor::uninject);
 
 
             // Clean up Bukkit
             unregisterChannelHandler();
         }
     }
-
 
 
     /**
@@ -117,20 +115,9 @@ public class Injector {
      * @return The packet interceptor.
      */
     private Interceptor injectChannelInternal(Channel channel) {
-        try {
-            Interceptor interceptor = (Interceptor) channel.pipeline().get(handlerName);
-
-            // Inject our packet interceptor
-            if (interceptor == null) {
-                interceptor = new Interceptor(channel);
-                channel.pipeline().addBefore("packet_handler", handlerName, interceptor);
-                interceptors.add(interceptor);
-            }
-
-            return interceptor;
-        } catch (IllegalArgumentException e) {
-            // Try again
-            return (Interceptor) channel.pipeline().get(handlerName);
-        }
+        PlayerInterceptor interceptor = new PlayerInterceptor(channel, handlerName);
+        interceptor.inject();
+        interceptors.add(interceptor);
+        return interceptor;
     }
 }

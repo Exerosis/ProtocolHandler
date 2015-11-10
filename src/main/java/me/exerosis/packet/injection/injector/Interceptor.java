@@ -27,8 +27,7 @@ class Interceptor extends ChannelDuplexHandler {
     }
 
     public void inject() {
-        if (!isInjected())
-            channel.pipeline().addBefore("packet_handler", handlerName, this);
+        channel.pipeline().addFirst(handlerName, this);
     }
 
     public void uninject() {
@@ -38,6 +37,10 @@ class Interceptor extends ChannelDuplexHandler {
             } catch (NoSuchElementException ignored) {
             }
         });
+    }
+
+    public String getHandlerName() {
+        return handlerName;
     }
 
     public boolean isInjected() {

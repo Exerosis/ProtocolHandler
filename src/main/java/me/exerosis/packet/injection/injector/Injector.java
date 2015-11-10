@@ -18,9 +18,10 @@ public class Injector {
     private ChannelInboundHandlerAdapter serverChannelHandler;
     private ChannelInitializer<Channel> beginInitProtocol;
     private ChannelInitializer<Channel> endInitProtocol;
-    private InterceptorManager interceptorManager = new InterceptorManager();
+    private InterceptorManager interceptorManager;
 
     public Injector() {
+        interceptorManager = new InterceptorManager();
         registerChannelHandler();
     }
 

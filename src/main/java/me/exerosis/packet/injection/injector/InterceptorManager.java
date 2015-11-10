@@ -7,7 +7,6 @@ import io.netty.channel.ChannelPromise;
 import me.exerosis.packet.injection.handlers.PlayerHandler;
 import me.exerosis.reflection.Reflect;
 import me.exerosis.reflection.ReflectClass;
-import net.minecraft.server.v1_8_R1.NetworkManager;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class InterceptorManager {
             @Override
             public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
                 if (loginPacket.isInstance(msg)) {
-                    GameProfile value = loginPacket.setInstance(msg).getField(GameProfile.class).getValue();
+                    GameProfile value = (GameProfile) Reflect.Class(msg).getField(Object.class).getValue();
                     channelLookup.put(value.getName(), getChannel());
                 }
                 super.channelRead(ctx, msg);
@@ -55,7 +54,7 @@ public class InterceptorManager {
     public Channel getChannel(Player player) {
         Channel channel = getChannel(player.getName());
         if (channel == null) {
-            NetworkManager networkManager = PlayerHandler.getPlayer(player).getNetworkManager();
+            Object networkManager = PlayerHandler.getPlayer(player).getNetworkManager();
             channel = Reflect.Class(networkManager).getField(Channel.class).getValue();
             channelLookup.put(player.getName(), channel);
         }

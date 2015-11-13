@@ -46,9 +46,23 @@ public class InterceptorManager {
         interceptors.add(interceptor);
     }
 
+ /*   private void fire(ChannelHandlerContext ctx, Object packet, ChannelPromise promise) throws Exception {
+        PacketEvent listener = PacketEventSystem.fire(packet, packetPlayer);
+
+            if (listener == null)
+                if (promise != null)
+                    super.write(ctx, packet, promise);
+                else
+                    super.channelRead(ctx, packet);
+            else if (!listener.isCancelled())
+                if (promise != null)
+                    super.write(ctx, listener.getWrapper().getPacket(), promise);
+                else
+                    super.channelRead(ctx, listener.getWrapper().getPacket());
+    }*/
+
     public void uninjectAll() {
         interceptors.forEach(PlayerInterceptor::uninject);
-
     }
 
     public Channel getChannel(Player player) {

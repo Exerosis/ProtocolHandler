@@ -1,7 +1,7 @@
 package me.exerosis.packet.wrappers.in;
 
 import me.exerosis.packet.utils.packet.PacketPlay;
-import me.exerosis.packet.utils.packet.ResourcePackStatus;
+import me.exerosis.packet.utils.packet.enums.ResourcePackStatus;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 

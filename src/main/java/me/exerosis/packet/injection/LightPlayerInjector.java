@@ -1,6 +1,7 @@
 package me.exerosis.packet.injection;
 
 import com.google.common.base.Preconditions;
+import com.mojang.authlib.GameProfile;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -10,6 +11,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @SuppressWarnings({"static-method", "SynchronizeOnNonFinalField"})
@@ -151,6 +153,30 @@ public class LightPlayerInjector extends ChannelDuplexHandler {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object packet) throws Exception {
+        LightPlayerInjector d = new LightPlayerInjector(player) {
+            @Override
+            public Object outgoing(Object packet) {
+                for (Field field : packet.getClass().getFields()) {
+                    if (!field.getType().equals(List.class))
+                        continue;
+                    field.setAccessible(true);
+                    try {
+                        List list = (List) field.get(packet);
+                        for (Field playerDataField : list.get(0).getClass().getFields()) {
+                            if (!field.getType().equals(GameProfile.class))
+                                continue;
+                            GameProfile profile = (GameProfile) playerDataField.get(list.get(0));
+
+                        }
+
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                return packet;
+            }
+        };
         super.channelRead(ctx, incoming(packet));
     }
 

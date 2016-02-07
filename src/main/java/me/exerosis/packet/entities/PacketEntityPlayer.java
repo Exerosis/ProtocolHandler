@@ -30,7 +30,7 @@ public abstract class PacketEntityPlayer extends Entity {
     }
 
     /**
-     * Creates a GameProfile with a name, skin, and uuid.
+     * Creates a Profile with a name, skin, and uuid.
      *
      * @param name
      * @param skinId

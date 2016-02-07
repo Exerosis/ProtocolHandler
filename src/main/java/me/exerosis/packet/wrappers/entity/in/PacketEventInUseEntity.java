@@ -1,7 +1,7 @@
 package me.exerosis.packet.wrappers.entity.in;
 
-import me.exerosis.packet.utils.packet.EntityUseAction;
 import me.exerosis.packet.utils.packet.PacketPlay;
+import me.exerosis.packet.utils.packet.enums.EntityUseAction;
 import me.exerosis.packet.wrappers.PacketWrapper;
 import me.exerosis.reflection.Reflect;
 import net.minecraft.server.v1_8_R1.Vec3D;
